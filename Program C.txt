@@ -1,0 +1,38 @@
+// Pentru fiecare numar egal cu cel de pe a doua pozitie din vector o sa se scada primul numar
+// Al treilea numar reprezinta numarul de iteratii ce trebuie facut
+// Dupa ce se efectueaza totate scaderile o sa se faca suma numerelor
+#include <stdlib.h>
+#include <stdio.h>
+
+int main() {
+
+    int vector[] = {9,10,4,10,10,2,10};
+    int poz = 0;
+    int nr1 = vector[poz];poz++;
+    int nr2 = vector[poz];poz++;
+    int nr3 = vector[poz];poz++;
+    int c = 0;
+    while(c < nr3){
+        int aux = vector[poz];
+        if(aux == nr2){
+            aux -= nr1;
+            vector[poz] = aux;
+        }
+        c++;
+        poz++;
+    }
+
+    int suma = 0;
+    poz = 3;
+    c = 0;
+    while(c < nr3){
+        int aux = vector[poz];
+        suma += aux;
+        poz++;
+        c++;
+    }
+    vector[0] = suma;
+    printf("%d",vector[0]);
+
+    return 0;
+}

@@ -1,0 +1,60 @@
+Pentru toate numerele diferite de al doilea numar o sa scad din ele primul numar
+Al treilea nr reprezinta nr de iteratii pentru a parcurge vectorul
+La final fac si suma
+
+int vector[] = {9,10,4,10,10,2,10};
+
+0 : add $1, $0, $0        B: 000_000_000_001_0_000	X"0010" - se initializeaza contorul de bucle cu 0
+1 : add $2, $0, $0	  B: 000_000_000_010_0_000	X"0020" - se initializeaza contorul de adrese cu 0
+2 : lw $3,  0($2)         B: 010_010_011_0000000	X"4980" - se memoreaza in $3 primul numar din vector
+3 : addi $2, $2, 1	  B: 001_010_010_0000001	X"2901" - se incrementeaza contorul pentru adrese
+4 : lw $4,  0($2)         B: 010_010_100_0000000	X"4A00" - se memoreaza in $4 al doilea numar din vector
+5 : addi $2, $2, 1	  B: 001_010_010_0000001	X"2901" - se incrementeaza contorul pentru adrese
+6 : lw $5,  0($2)	  B: 010_010_101_0000000	X"4A80" - se memoreaza in $5 al treilea numar
+7 : addi $2, $2, 1        B: 001_010_010_0000001	X"2901" - se incrementeaza contorul pentru adrese
+8 : beq $1, $5, 7 	  B: 100_001_101_0001000	X"8687" - se verifica daca s-a parcurs tot vectorul (contorul este egal cu al 3-lea numar)
+9:    lw $6,  0($2)       B: 010_010_110_0000000	X"4B00" - se memoreaza in $6 numarul curent din vector de la adresa $2
+10:   bne $6, $4, 3	  B: 110_110_100_0000011	X"DA02" - se verifica daca numerul din $6 este egal cu al doilea numar din vector ($4)
+11: 	sub $6, $6, $3    B: 000_110_011_110_0_001	X"19E1" - daca sunt egale...se scade din $6 primul numar din vector ($3)
+12:   	sw $6, 0($2)	  B: 011_010_110_0000000	X"6B00" - se scrie in memorie rezultatul scaderii
+13:   addi $2, $2, 1	  B: 001_010_010_0000001	X"2901" - incremnetez contorul pentru adrese
+14:   addi $1, $1, 1      B: 001_001_001_0000001	X"2481" - incrementez contorul pentru bucla
+15: j 8                   B: 111_0000000001000		X"E008" - adresa de jump (sare la 10 - beq)
+16: add $1, $0, $0        B: 000_000_000_001_0_000	X"0010" - reinitializez contorul pentru bucla
+17: addi $2, $0, 3        B: 001_000_010_0000011	X"2103" - reinitializez contorul pentru adresa (pentru a parcurge vectorul) plecand de la adresa 3
+18: add $7, $0,$0         B: 000_000_000_111_0_000	X"0070" - initializez $7 pentru calcularea sumei
+19: beq $1, $5, 5         B: 100_001_101_0000110	X"8685" - compar daca contorul pentru bucla este egal cu al treilea numar
+20:   lw $6,  0($2)       B: 010_010_110_0000000	X"4B00" - incarc in registrul $6 ce am in memorie la adresa $2
+21:   add $7, $7, $6      B: 000_111_110_111_0_000	X"1F70" - adaug numarul in suma
+22:   addi $2,$2,1        B: 001_010_010_0000001	X"2901" - incrementez contorul pentru adrese
+23:   addi $1,$1,1        B: 001_001_001_0000001	X"2481" - incrementez contorul pentru bucla
+24: j 19                  B: 111_0000000010011		X"E013" - jump la adresa 19 (beq)
+25: sw $7,  0($0)         B: 011_000_111_0000000	X"6380" - scriu pe prima pozitie din vector suma
+
+0 : add $1, $0, $0        RegWrite=1; RegDst=1; Zero= 1;
+1 : add $2, $0, $0	  RegWrite=1; RegDst=1; Zero= 1;
+2 : lw $3,  0($2)         RegWrite=1; ALUSrc=1; Zero= 1; MemtoReg=1; ExtOp=1;
+3 : addi $2, $2, 1	  RegWrite=1; AlUSrc=1; ExtOp=1;
+4 : lw $4,  0($2)         RegWrite=1; ALUSrc=1; MemtoReg=1; ExtOp=1;
+5 : addi $2, $2, 1	  RegWrite=1; AlUSrc=1; ExtOp=1;
+6 : lw $5,  0($2)	  RegWrite=1; ALUSrc=1; MemtoReg=1; ExtOp=1;
+7 : addi $2, $2, 1        RegWrite=1; AlUSrc=1; ExtOp=1;
+8 : beq $1, $5, 7 	  ExtOp=1; BranchSignal=1;
+9:    lw $6,  0($2)       RegWrite=1; ALUSrc=1; MemtoReg=1; ExtOp=1;
+10:   bne $6, $4, 3	  Zero=1; ExtOp=1; BNE=1;
+11: 	sub $6, $6, $3    RegWrite=1; RegDst=1;
+12:   	sw $6, 0($2)	  ALUSrc=1; MemWrite=1; ExtOp=1;
+13:   addi $2, $2, 1	  RegWrite=1; AlUSrc=1; ExtOp=1;
+14:   addi $1, $1, 1      RegWrite=1; AlUSrc=1; ExtOp=1;
+15: j 8                   Zero=1; sa=1; JumpSignal=1;
+16: add $1, $0, $0        RegWrite=1; RegDst=1; Zero= 1;
+17: addi $2, $0, 3        RegWrite=1; AlUSrc=1; ExtOp=1;
+18: add $7, $0,$0         RegWrite=1; RegDst=1; Zero= 1;
+19: beq $1, $5, 5         ExtOp=1; BranchSignal=1;
+20:   lw $6,  0($2)       RegWrite=1; ALUSrc=1; MemtoReg=1; ExtOp=1;
+21:   add $7, $7, $6      RegWrite=1; RegDst=1; Zero= 1;
+22:   addi $2,$2,1        RegWrite=1; AlUSrc=1; ExtOp=1;
+23:   addi $1,$1,1        RegWrite=1; AlUSrc=1; ExtOp=1;
+24: j 19                  Zero=1; sa=1; JumpSignal=1;
+25: sw $7,  0($0)         ALUSrc=1; MemWrite=1; ExtOp=1;
+    
